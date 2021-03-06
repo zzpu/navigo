@@ -1,8 +1,8 @@
 package data
 
 import (
-	"ucenter/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
+	"ucenter/internal/biz"
 )
 
 type greeterRepo struct {

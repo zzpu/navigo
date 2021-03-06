@@ -8,7 +8,7 @@ server:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test
+    source: root:123456@172.16.131.75:3306/bitrade?characterEncoding=utf-8
   redis:
     addr: 127.0.0.1:6379
     dial_timeout: 0.1s

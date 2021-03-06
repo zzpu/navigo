@@ -1,18 +1,21 @@
-
 package service
 
-import(
+import (
 	"context"
+	"github.com/go-kratos/kratos/v2/log"
+	"ucenter/internal/biz"
 
 	pb "ucenter/api/auth/v1"
 )
 
 type AuthService struct {
 	pb.UnimplementedAuthServer
+	uc  *biz.MemberMgr
+	log *log.Helper
 }
 
-func NewAuthService() pb.AuthServer {
-	return &AuthService{}
+func NewAuthService(uc *biz.MemberMgr, logger log.Logger) *AuthService {
+	return &AuthService{uc: uc, log: log.NewHelper("service/auth", logger)}
 }
 
 func (s *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterReply, error) {
@@ -24,6 +27,9 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 func (s *AuthService) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutReply, error) {
 	return &pb.LogoutReply{}, nil
 }
-func (s *AuthService) Info(ctx context.Context, req *pb.InfoRequest) (*pb.InfoReply, error) {
-	return &pb.InfoReply{}, nil
+func (s *AuthService) GetInfo(ctx context.Context, req *pb.GetInfoRequest) (*pb.GetInfoReply, error) {
+	return &pb.GetInfoReply{}, nil
+}
+func (s *AuthService) UpdateInfo(ctx context.Context, req *pb.UpdateInfoRequest) (*pb.UpdateInfoReply, error) {
+	return &pb.UpdateInfoReply{}, nil
 }

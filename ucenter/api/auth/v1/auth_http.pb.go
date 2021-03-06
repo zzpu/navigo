@@ -20,13 +20,15 @@ var _ = mux.NewRouter
 const _ = http1.SupportPackageIsVersion1
 
 type AuthHandler interface {
-	Info(context.Context, *InfoRequest) (*InfoReply, error)
+	GetInfo(context.Context, *GetInfoRequest) (*GetInfoReply, error)
 
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 
 	Logout(context.Context, *LogoutRequest) (*LogoutReply, error)
 
 	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
+
+	UpdateInfo(context.Context, *UpdateInfoRequest) (*UpdateInfoReply, error)
 }
 
 func NewAuthHandler(srv AuthHandler, opts ...http1.HandleOption) http.Handler {
@@ -36,7 +38,7 @@ func NewAuthHandler(srv AuthHandler, opts ...http1.HandleOption) http.Handler {
 	}
 	r := mux.NewRouter()
 
-	r.HandleFunc("/api/v1/auth/register", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/ucenter/auth/v1/register", func(w http.ResponseWriter, r *http.Request) {
 		var in RegisterRequest
 		if err := h.Decode(r, &in); err != nil {
 			h.Error(w, r, err)
@@ -60,7 +62,7 @@ func NewAuthHandler(srv AuthHandler, opts ...http1.HandleOption) http.Handler {
 		}
 	}).Methods("POST")
 
-	r.HandleFunc("/api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/ucenter/auth/v1/login", func(w http.ResponseWriter, r *http.Request) {
 		var in LoginRequest
 		if err := h.Decode(r, &in); err != nil {
 			h.Error(w, r, err)
@@ -84,7 +86,7 @@ func NewAuthHandler(srv AuthHandler, opts ...http1.HandleOption) http.Handler {
 		}
 	}).Methods("POST")
 
-	r.HandleFunc("/api/v1/auth/logout", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/ucenter/auth/v1/logout", func(w http.ResponseWriter, r *http.Request) {
 		var in LogoutRequest
 		if err := h.Decode(r, &in); err != nil {
 			h.Error(w, r, err)
@@ -108,15 +110,15 @@ func NewAuthHandler(srv AuthHandler, opts ...http1.HandleOption) http.Handler {
 		}
 	}).Methods("GET")
 
-	r.HandleFunc("/api/v1/auth/info", func(w http.ResponseWriter, r *http.Request) {
-		var in InfoRequest
+	r.HandleFunc("/ucenter/auth/v1/info", func(w http.ResponseWriter, r *http.Request) {
+		var in GetInfoRequest
 		if err := h.Decode(r, &in); err != nil {
 			h.Error(w, r, err)
 			return
 		}
 
 		next := func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Info(ctx, req.(*InfoRequest))
+			return srv.GetInfo(ctx, req.(*GetInfoRequest))
 		}
 		if h.Middleware != nil {
 			next = h.Middleware(next)
@@ -126,11 +128,35 @@ func NewAuthHandler(srv AuthHandler, opts ...http1.HandleOption) http.Handler {
 			h.Error(w, r, err)
 			return
 		}
-		reply := out.(*InfoReply)
+		reply := out.(*GetInfoReply)
 		if err := h.Encode(w, r, reply); err != nil {
 			h.Error(w, r, err)
 		}
 	}).Methods("GET")
+
+	r.HandleFunc("/ucenter/auth/update", func(w http.ResponseWriter, r *http.Request) {
+		var in UpdateInfoRequest
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateInfo(ctx, req.(*UpdateInfoRequest))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		reply := out.(*UpdateInfoReply)
+		if err := h.Encode(w, r, reply); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("POST")
 
 	return r
 }

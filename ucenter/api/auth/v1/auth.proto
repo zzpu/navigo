@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.auth.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
 
 option go_package = "ucenter/api/auth/v1;v1";
 option java_multiple_files = true;
@@ -26,44 +27,69 @@ service Auth {
             get: "/ucenter/auth/v1/logout",
         };
     };
-    rpc Info (InfoRequest) returns (InfoReply){
+    rpc GetInfo (GetInfoRequest) returns (GetInfoReply){
         option (google.api.http) = {
             get: "/ucenter/auth/v1/info",
         };
     };
+    rpc UpdateInfo (UpdateInfoRequest) returns (UpdateInfoReply){
+        option (google.api.http) = {
+            post: "/ucenter/auth/update",
+            body: "*"
+        };
+    };
+
 }
 
 message RegisterRequest {
     string name = 1;
     string password = 2;
     string code = 3;
-    string tel = 4;
+    string phone = 4;
+    string seq = 5;
 }
 message RegisterReply {
-    RegisterData data = 1;
-}
-message RegisterData {
-    string token = 1;
+    int64 code = 1;
+    string message = 2;
+    string token = 3;
+    google.protobuf.Any data  = 4;
 }
 
 message LoginRequest {
     string name = 1;
     string password = 2;
     string code = 3;
-    string tel = 4;
+    string phone = 4;
+    string seq = 5;
 }
 message LoginReply {
-    int32 code = 1;
+    int64 code = 1;
     string message = 2;
-    LoginData data  = 3;
-}
-message LoginData {
-    string token = 1;
+    string token = 3;
+    google.protobuf.Any data  = 4;
 }
 
+message LogoutRequest {
 
-message LogoutRequest {}
-message LogoutReply {}
+}
+message LogoutReply {
+    int64 code = 1;
+    string message = 2;
+}
 
-message InfoRequest {}
-message InfoReply {}
+
+message UpdateInfoRequest {
+    int64 id = 1;
+    google.protobuf.Any data  = 3;
+}
+message UpdateInfoReply {
+    int64 code = 1;
+    string message = 2;
+}
+
+message GetInfoRequest {}
+message GetInfoReply {
+    int64 code = 1;
+    string message = 2;
+    google.protobuf.Any data  = 3;
+}
