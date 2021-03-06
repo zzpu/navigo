@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package api.auth.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "ucenter/api/auth/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.auth.v1";
+
+service Auth {
+    rpc Register (RegisterRequest) returns (RegisterReply){
+        option (google.api.http) = {
+            post: "/ucenter/auth/v1/register",
+            body: "*"
+        };
+    };
+    rpc Login (LoginRequest) returns (LoginReply){
+        option (google.api.http) = {
+            post: "/ucenter/auth/v1/login",
+            body: "*"
+        };
+    };
+    rpc Logout (LogoutRequest) returns (LogoutReply){
+        option (google.api.http) = {
+            get: "/ucenter/auth/v1/logout",
+        };
+    };
+    rpc Info (InfoRequest) returns (InfoReply){
+        option (google.api.http) = {
+            get: "/ucenter/auth/v1/info",
+        };
+    };
+}
+
+message RegisterRequest {
+    string name = 1;
+    string password = 2;
+    string code = 3;
+    string tel = 4;
+}
+message RegisterReply {
+    RegisterData data = 1;
+}
+message RegisterData {
+    string token = 1;
+}
+
+message LoginRequest {
+    string name = 1;
+    string password = 2;
+    string code = 3;
+    string tel = 4;
+}
+message LoginReply {
+    int32 code = 1;
+    string message = 2;
+    LoginData data  = 3;
+}
+message LoginData {
+    string token = 1;
+}
+
+
+message LogoutRequest {}
+message LogoutReply {}
+
+message InfoRequest {}
+message InfoReply {}
